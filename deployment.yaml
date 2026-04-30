@@ -19,3 +19,4 @@ spec:
           image: acrtestsarath.azurecr.io/nodejs-shopping-cart:latest
           ports:
             - containerPort: 3000
+ 
