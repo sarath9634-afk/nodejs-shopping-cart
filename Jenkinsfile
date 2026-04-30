@@ -37,7 +37,7 @@ pipeline {
 		stage('SonarQube SAST Scan') {
     steps {
         script {
-            def scannerHome = tool 'sonar-scanner'
+            def scannerHome = tool 'sonarqube'
 
             withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_AUTH_TOKEN')]) {
                 withSonarQubeEnv('SonarQube') {
