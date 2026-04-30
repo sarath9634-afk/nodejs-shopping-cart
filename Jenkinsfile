@@ -141,5 +141,30 @@ pipeline {
             }
         }
 		*/
+		stage('Connect to AKS') {
+            steps {
+                sh '''
+                az aks get-credentials --resource-group $RESOURCE_GROUP --name $AKS_CLUSTER --overwrite-existing
+                '''
+            }
+        }
+
+        stage('Deploy to AKS using YAML') {
+            steps {
+                sh '''
+                kubectl apply -f deployment.yaml
+                kubectl apply -f service.yaml
+                '''
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                sh '''
+                kubectl get pods
+                kubectl get svc
+                '''
+            }
+        }
     }
 }
