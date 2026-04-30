@@ -6,11 +6,11 @@ pipeline {
     }
 
     environment {
-        ACR_NAME = 'luckyregistry11'
-        ACR_LOGIN_SERVER = 'luckyregistry11.azurecr.io'
-        IMAGE_NAME = 'nodejs-shpping-cart'
-        RESOURCE_GROUP = 'lucky'
-        AKS_CLUSTER = 'lucky-aks-cluster11'
+        ACR_NAME = 'acrtestsarath'
+        ACR_LOGIN_SERVER = 'acrtestsarath.azurecr.io'
+        IMAGE_NAME = 'nodejs-shopping-cart'
+        RESOURCE_GROUP = 'rg1'
+        AKS_CLUSTER = 'sarath-aks-cluster1'
         HELM_RELEASE = 'nodejs-shopping-cart'
         HELM_CHART_PATH = 'helm/nodejs-shopping-cart'
         IMAGE_TAG = "${BUILD_NUMBER}"
@@ -20,7 +20,7 @@ pipeline {
 
         stage('Checkout Code') {
             steps {
-                git branch: 'master', url: 'https://github.com/luckyncpl/nodejs-shopping-cart'
+                git branch: 'master', url: 'https://github.com/sarath9634-afk/nodejs-shopping-cart.git'
             }
         }
 
@@ -33,29 +33,30 @@ pipeline {
                 '''
             }
         }
+		
+		stage('SonarQube SAST Scan') {
+    steps {
+        script {
+            def scannerHome = tool 'sonar-scanner'
 
-        stage('SonarQube SAST Scan') {
-            steps {
-                script {
-                    def scannerHome = tool 'sonar-scanner'
-
-                    withSonarQubeEnv('SonarQube') {
-                        sh """
-                        ${scannerHome}/bin/sonar-scanner \
-                        -Dsonar.projectKey=nodejs-shopping-cart_12345 \
-                        -Dsonar.projectName=nodejs-shopping-cart \
-                        -Dsonar.sources=. \
-                        -Dsonar.exclusions=node_modules/**,helm/**,data/** \
-                        -Dsonar.token=$SONAR_AUTH_TOKEN
-                        """
-                    }
+            withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_AUTH_TOKEN')]) {
+                withSonarQubeEnv('SonarQube') {
+                    sh """
+                    ${scannerHome}/bin/sonar-scanner \
+                    -Dsonar.projectKey=sarath-nodejs-shopping-cart \
+                    -Dsonar.projectName=sarath-nodejs-shopping-cart \
+                    -Dsonar.sources=. \
+                    -Dsonar.exclusions=node_modules/**,helm/**,data/**/ \
+                    -Dsonar.token=$SONAR_AUTH_TOKEN
+                    """
                 }
             }
         }
-
+    }
+}        
         stage('Snyk SCA Scan') {
             steps {
-                withCredentials([string(credentialsId: 'SNYK_TOKEN', variable: 'SNYK_TOKEN')]) {
+                withCredentials([string(credentialsId: 'synktoken', variable: 'SNYK_TOKEN')]) {
                     sh '''
                     npm install -g snyk
                     snyk --version
@@ -107,7 +108,11 @@ pipeline {
                 '''
             }
         }
-
+		
+		
+		
+/* 
+//not for today
         stage('Connect to AKS') {
             steps {
                 sh '''
@@ -135,5 +140,6 @@ pipeline {
                 '''
             }
         }
+		*/
     }
 }
