@@ -14,9 +14,16 @@ spec:
       labels:
         app: nodejs-shopping-cart
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: nodejs-shopping-cart
-          image: acrtestsarath.azurecr.io/nodejs-shopping-cart:latest
+          image: acrtestsarath.azurecr.io/nodejs-shopping-cart:1
           ports:
             - containerPort: 3000
- 
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "250m"
+              memory: "512Mi"
